@@ -13,6 +13,10 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(express.json());
 
+// make the server use our html css and js files in the public folder
+app.use(express.static('public'));
+
+
 const { animals } = require('./data/animals.json');
 
 function filterByQuery(query, animalsArray) {
@@ -112,7 +116,7 @@ app.post('/api/animals', (req, res) => {
     req.body.id = animals.length.toString();
 
     // if any data in req.body is incorrect, send 400 error back
-    if(!validateAnimal(req.body)){
+    if (!validateAnimal(req.body)) {
         res.status(400).send('The animal is not properly formatted.')
     } else {
         const animal = createNewAnimal(req.body, animals);
@@ -120,11 +124,26 @@ app.post('/api/animals', (req, res) => {
     }
 
     // add animal to json file and animals array in this function
-    const animal = createNewAnimal(req.body, animals);
+    // const animal = createNewAnimal(req.body, animals);
 
-    res.json(animal);
+    // res.json(animal);
 });
 
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, './public/index.html'));
+});
+
+app.get('/animals', (req, res) => {
+    res.sendFile(path.join(__dirname, './public/animals.html'));
+});
+
+app.get('/zookeepers', (req, res) => {
+    res.sendFile(path.join(__dirname, './public/zookeepers.html'));
+});
+
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, './public/index.html'));
+});
 
 
 app.listen(PORT, () => {
